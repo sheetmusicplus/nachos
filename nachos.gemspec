@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.date = %q{2009-07-13}
   s.description = %q{Nachos is a Ruby library for managing an encrypted data store.}
   s.email = %q{scott@ohlol.net}
-  s.files = ["LICENSE", "README.markdown", "conf", "lib", "lib/nachos.rb"]
+  s.files = ["LICENSE", "README.markdown", "lib", "lib/nachos.rb"]
   s.has_rdoc = false
   s.homepage = %q{http://github.com/ohlol/nachos"}
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
