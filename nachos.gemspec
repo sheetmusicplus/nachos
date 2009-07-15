@@ -2,14 +2,14 @@
 
 Gem::Specification.new do |s|
   s.name = %q{nachos}
-  s.version = "0.2"
+  s.version = "0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Scott Smith"]
-  s.date = %q{2009-07-13}
+  s.date = %q{2009-07-14}
   s.description = %q{Nachos is a Ruby library for managing an encrypted data store.}
   s.email = %q{scott@ohlol.net}
-  s.files = ["LICENSE", "README.markdown", "lib", "lib/nachos.rb"]
+  s.files = ["LICENSE", "README.markdown", "conf", "lib", "lib/nachos.rb"]
   s.has_rdoc = false
   s.homepage = %q{http://github.com/ohlol/nachos"}
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
