@@ -14,7 +14,6 @@ EXAMPLE USAGE
     
     e = Nachos::Encryptor('password')
     e.clear_data = 'foo bar baz'
-    e.secret_data = e.encrypt(e.clear_data)
     e.save_data
 
 ...to load:

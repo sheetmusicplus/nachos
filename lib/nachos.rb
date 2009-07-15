@@ -80,7 +80,6 @@ class Nachos::Encryptor
           "random secret key and/or IV!"
       end
     else
-      p "foo"
       @secret_key = @keystore.secret_key
       @secret_iv = @keystore.secret_iv
     end
@@ -134,7 +133,7 @@ class Nachos::Encryptor
 
   def save_data
     if @encrypted_data.empty?
-      encrypt
+      encrypt(@clear_data)
     end
 
     begin
