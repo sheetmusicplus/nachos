@@ -5,7 +5,7 @@ Nachos keeps people from taking your stuff. It's mine, nachos!
 
 You need to generate a public and private key to bootstrap it.
 
-For more info, check here: (http://ohlol.net/2009/07/announcing-nachos.html).
+For more info, check here: http://ohlol.net/2009/07/announcing-nachos.html
 
 INSTALL
 -------
