@@ -72,11 +72,11 @@ class Nachos::Encryptor
         @clear_secret_key = @cipher.random_key
         @clear_secret_iv = @cipher.random_iv
 
-        @secret_key = @keystore.secret_key encrypt(@clear_secret_key)
+        @secret_key = @keystore.secret_key = encrypt(@clear_secret_key)
         @secret_iv = @keystore.secret_iv = encrypt(@clear_secret_iv)
         @keystore.save_secrets
       rescue => e
-        raise Nachos::EncryptorException, "There was a problem generating" +
+        raise Nachos::EncryptorException, "There was a problem generating " +
           "random secret key and/or IV!"
       end
     else
@@ -133,7 +133,7 @@ class Nachos::Encryptor
 
   def save_data
     if @encrypted_data.empty?
-      encrypt(@clear_data)
+      @encrypted_data = encrypt(@clear_data)
     end
 
     begin
