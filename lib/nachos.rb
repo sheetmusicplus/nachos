@@ -50,8 +50,6 @@ class Nachos::Encryptor
       @public_key = OpenSSL::PKey::RSA.new(File.open(self.config[:public_key]))
       @private_key =
         OpenSSL::PKey::RSA.new(File.open(self.config[:private_key]), password)
-      @cipher = OpenSSL::Cipher::Cipher.new('aes-256-cbc')
-
       @keystore = Nachos::KeyStore.new
 
       keypair
@@ -69,11 +67,15 @@ class Nachos::Encryptor
   def keypair
     if @keystore.secret_key.empty? || @keystore.secret_iv.empty?
       begin
-        @clear_secret_key = @cipher.random_key
-        @clear_secret_iv = @cipher.random_iv
+        cipher = OpenSSL::Cipher::Cipher.new('aes-256-cbc')
 
-        @secret_key = @keystore.secret_key = encrypt(@clear_secret_key)
-        @secret_iv = @keystore.secret_iv = encrypt(@clear_secret_iv)
+        @clear_secret_key = cipher.random_key
+        @clear_secret_iv = cipher.random_iv
+
+        @secret_key = @keystore.secret_key =
+          @public_key.public_encrypt(@clear_secret_key)
+        @secret_iv = @keystore.secret_iv =
+          @public_key.public_encrypt(@clear_secret_iv)
         @keystore.save_secrets
       rescue => e
         raise Nachos::EncryptorException, "There was a problem generating " +
@@ -84,8 +86,8 @@ class Nachos::Encryptor
       @secret_iv = @keystore.secret_iv
     end
 
-    @clear_secret_key = decrypt(@secret_key)
-    @clear_secret_iv = decrypt(@secret_iv)
+    @clear_secret_key = @private_key.private_decrypt(@secret_key)
+    @clear_secret_iv = @private_key.private_decrypt(@secret_iv)
   end
 
   def encrypt(str)
@@ -93,8 +95,14 @@ class Nachos::Encryptor
       raise Nachos::EncryptorException, "What do you want to encrypt?"
     else
       begin
-      @cipher.encrypt
-      str = @public_key.public_encrypt(str)
+        cipher = OpenSSL::Cipher::Cipher.new('aes-256-cbc')
+
+        cipher.encrypt
+        cipher.key = @clear_secret_key
+        cipher.iv = @clear_secret_iv
+
+        str_e = cipher.update(str)
+        str_e << cipher.final
       rescue => e
         raise Nachos::EncryptorException, "Couldn't encrypt the data! (#{e})"
       end
@@ -106,10 +114,16 @@ class Nachos::Encryptor
       raise Nachos::EncryptorException, "What do you want to decrypt?"
     else
       begin
-        @cipher.decrypt
-         str = @private_key.private_decrypt(str)
+        cipher = OpenSSL::Cipher::Cipher.new('aes-256-cbc')
+
+        cipher.decrypt
+        cipher.key = @clear_secret_key
+        cipher.iv = @clear_secret_iv
+
+        str_d = cipher.update(str)
+        str_d << cipher.final
       rescue => e
-        raise Nachos::decryptorException, "Couldn't decrypt the data! (#{e})"
+        raise Nachos::EncryptorException, "Couldn't decrypt the data! (#{e})"
       end
     end
   end
@@ -123,7 +137,7 @@ class Nachos::Encryptor
       end
 
       @encrypted_data.chomp!
-      @clear_data = decrypt(@encrypted_data)
+      @clear_data = decrypt(Base64.decode64(@encrypted_data))
     rescue Errno::ENOENT
     rescue => e
       raise Nachos::EncryptorException, "There was a problem reading the " +
@@ -138,7 +152,7 @@ class Nachos::Encryptor
 
     begin
       File.open(self.config[:data_store], 'w') do |f|
-        f.puts @encrypted_data
+        f.puts Base64.encode64(@encrypted_data)
       end
     rescue
       raise Nachos::EncryptorException, "There was a problem saving the data " +
