@@ -132,8 +132,10 @@ class Nachos::Encryptor
     begin
       @encrypted_data = ''
 
-      File.open(self.config[:data_store], 'r') do |f|
-        @encrypted_data = @encrypted_data + f.gets
+      f = File.open(self.config[:data_store], 'r')
+      f.readlines.each do |line|
+        line.chomp!
+        @encrypted_data = @encrypted_data + line
       end
 
       @encrypted_data.chomp!
