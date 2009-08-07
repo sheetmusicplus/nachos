@@ -55,7 +55,7 @@ to store:
       :data_store => 'config/secret-data.enc'
     }
 
-    e = Nachos::Encryptor('password')
+    e = Nachos::Encryptor('password', config)
     e.clear_data = 'foo bar baz'
     e.save_data
 
